@@ -812,6 +812,9 @@ export default function FavoritesPage() {
           }}
         >
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>资源详情</DialogTitle>
+            </DialogHeader>
             <ResourceDetail
               resourceId={selectedResource}
               onViewLineage={() => setShowLineage(true)}

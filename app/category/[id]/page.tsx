@@ -4,7 +4,9 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ResourceCard } from "@/components/resource-card"
+import { ResourceDetail } from "@/components/resource-detail"
 
 interface CategoryPageProps {
   params: {
@@ -17,6 +19,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const [loading, setLoading] = useState(true)
   const [categoryData, setCategoryData] = useState<any>(null)
   const [resources, setResources] = useState<any[]>([])
+  const [selectedResource, setSelectedResource] = useState<string | null>(null)
   const { id } = params
 
   useEffect(() => {
@@ -138,11 +141,33 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               owner={resource.owner}
               attributes={resource.attributes}
               tags={resource.tags}
-              onViewDetail={() => router.push(`/resource/${resource.type}/${resource.id}`)}
+              onViewDetail={() => setSelectedResource(resource.id)}
               onRequestPermission={() => console.log("Request permission for", resource.id)}
             />
           ))}
         </div>
+      )}
+
+      {selectedResource && (
+        <Dialog
+          open={!!selectedResource}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedResource(null)
+            }
+          }}
+        >
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>资源详情</DialogTitle>
+            </DialogHeader>
+            <ResourceDetail
+              resourceId={selectedResource}
+              onViewLineage={() => console.log("View lineage")}
+              onRequestPermission={() => console.log("Request permission")}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )

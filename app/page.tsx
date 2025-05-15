@@ -19,7 +19,6 @@ import { DataLineage } from "@/components/data-lineage"
 import { ResourceCard } from "@/components/resource-card"
 import { DirectoryNavigation } from "@/components/directory-navigation"
 
-// 资源数据类型
 interface ResourceAttribute {
   label: string
   value: string
@@ -38,7 +37,6 @@ interface Resource {
   lastUpdated?: string
 }
 
-// 筛选条件类型
 interface FilterOptions {
   types: string[]
   departments: string[]
@@ -62,7 +60,6 @@ export default function Home() {
     tags: [],
   })
 
-  // 所有资源数据
   const allResources: Resource[] = [
     {
       id: "customer_basic_info",
@@ -210,7 +207,6 @@ export default function Home() {
     },
   ]
 
-  // 获取所有可用的筛选选项
   const getFilterOptions = () => {
     const types = Array.from(new Set(allResources.map((r) => r.type)))
     const departments = Array.from(new Set(allResources.map((r) => r.department)))
@@ -218,7 +214,6 @@ export default function Home() {
       new Set(allResources.map((r) => r.updateFrequency).filter(Boolean) as string[]),
     )
 
-    // 获取所有标签并去重
     const allTags = allResources.flatMap((r) => r.tags)
     const tags = Array.from(new Set(allTags))
 
@@ -227,7 +222,6 @@ export default function Home() {
 
   const filterOptions = getFilterOptions()
 
-  // 搜索和筛选功能
   useEffect(() => {
     if (!searchQuery && Object.values(activeFilters).every((filters) => filters.length === 0)) {
       setIsSearching(false)
@@ -238,16 +232,13 @@ export default function Home() {
     setIsSearching(true)
     const query = searchQuery.toLowerCase()
 
-    // 筛选资源
     const filteredResources = allResources.filter((resource) => {
-      // 搜索匹配
       const matchesSearch =
         !searchQuery ||
         resource.title.toLowerCase().includes(query) ||
         resource.description.toLowerCase().includes(query) ||
         resource.tags.some((tag) => tag.toLowerCase().includes(query))
 
-      // 筛选条件匹配
       const matchesType = activeFilters.types.length === 0 || activeFilters.types.includes(resource.type)
 
       const matchesDepartment =
@@ -267,7 +258,6 @@ export default function Home() {
   }, [searchQuery, activeFilters])
 
   const handleSearch = () => {
-    // 触发搜索，已经在useEffect中实现
     console.log("Searching for:", searchQuery)
   }
 
@@ -277,10 +267,8 @@ export default function Home() {
       const index = currentFilters.indexOf(value)
 
       if (index === -1) {
-        // 添加筛选条件
         return { ...prev, [category]: [...currentFilters, value] }
       } else {
-        // 移除筛选条件
         currentFilters.splice(index, 1)
         return { ...prev, [category]: currentFilters }
       }
@@ -299,10 +287,8 @@ export default function Home() {
   const handleDirectoryItemSelect = (id: string, type: string, name: string) => {
     console.log(`Selected: ${name} (${id}) of type ${type}`)
 
-    // 根据不同类型的资源导航到不同的路径
     switch (type) {
       case "table":
-        // 打开资源详情对话框
         setSelectedResource(id)
         break
       case "metric":
@@ -315,13 +301,10 @@ export default function Home() {
         setSelectedResource(id)
         break
       default:
-        // 对于文件夹类型，可以导航到一个列表页面
         console.log(`Navigate to category: ${id}`)
-      // 这里可以添加导航逻辑
     }
   }
 
-  // 获取资源类型对应的图标
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "table":
@@ -337,7 +320,6 @@ export default function Home() {
     }
   }
 
-  // 获取资源类型的中文名称
   const getTypeLabel = (type: string) => {
     switch (type) {
       case "table":
@@ -353,12 +335,10 @@ export default function Home() {
     }
   }
 
-  // 计算活跃筛选条件的总数
   const activeFilterCount = Object.values(activeFilters).reduce((count, filters) => count + filters.length, 0)
 
   return (
     <div className="flex h-screen flex-col">
-      {/* 顶部导航栏 */}
       <header className="border-b bg-white px-6 py-3 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -403,7 +383,6 @@ export default function Home() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* 左侧目录导航栏 */}
         <aside className="w-64 border-r bg-gray-50 overflow-y-auto">
           <div className="p-4">
             <Tabs defaultValue="business" onValueChange={setActiveCategory}>
@@ -418,9 +397,7 @@ export default function Home() {
           <DirectoryNavigation activeCategory={activeCategory} onItemSelect={handleDirectoryItemSelect} />
         </aside>
 
-        {/* 主内容区 */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-6">
-          {/* 搜索区域 */}
           <div className="mb-6 flex items-center space-x-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
@@ -465,7 +442,6 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* 资源类型筛选 */}
                   <div>
                     <h4 className="text-sm font-medium mb-2">资源类型</h4>
                     <div className="space-y-2">
@@ -487,7 +463,6 @@ export default function Home() {
 
                   <Separator />
 
-                  {/* 部门筛选 */}
                   <div>
                     <h4 className="text-sm font-medium mb-2">所属部门</h4>
                     <div className="space-y-2">
@@ -508,7 +483,6 @@ export default function Home() {
 
                   <Separator />
 
-                  {/* 更新频率筛选 */}
                   <div>
                     <h4 className="text-sm font-medium mb-2">更新频率</h4>
                     <div className="space-y-2">
@@ -533,7 +507,6 @@ export default function Home() {
 
                   <Separator />
 
-                  {/* 标签筛选 */}
                   <div>
                     <h4 className="text-sm font-medium mb-2">业务标签</h4>
                     <div className="flex flex-wrap gap-2">
@@ -558,7 +531,6 @@ export default function Home() {
             </Popover>
           </div>
 
-          {/* 活跃筛选条件展示 */}
           {activeFilterCount > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
               {activeFilters.types.map((type) => (
@@ -619,7 +591,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* 搜索结果展示 */}
           {isSearching && (
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -657,7 +628,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* 资源卡片展示区域 - 仅在非搜索状态下显示 */}
           {!isSearching && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {allResources.slice(0, 6).map((resource) => (
@@ -676,7 +646,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* 推荐资源区 - 仅在非搜索状态下显示 */}
           {!isSearching && (
             <div className="mt-8">
               <div className="flex items-center justify-between mb-4">
@@ -773,7 +742,6 @@ export default function Home() {
         </main>
       </div>
 
-      {/* 资源详情弹窗 */}
       {selectedResource && (
         <Dialog
           open={!!selectedResource && !showLineage}
@@ -784,6 +752,9 @@ export default function Home() {
           }}
         >
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>资源详情</DialogTitle>
+            </DialogHeader>
             <ResourceDetail
               resourceId={selectedResource}
               onViewLineage={() => setShowLineage(true)}
@@ -792,7 +763,6 @@ export default function Home() {
         </Dialog>
       )}
 
-      {/* 血缘关系可视化弹窗 */}
       {showLineage && (
         <Dialog
           open={showLineage}

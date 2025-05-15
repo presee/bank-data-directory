@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, Database, BarChart3, Tag, FileText, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ResourceDetail } from "@/components/resource-detail"
 
 interface ResourcePageProps {
@@ -17,6 +18,7 @@ export default function ResourcePage({ params }: ResourcePageProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [resourceData, setResourceData] = useState<any>(null)
+  const [selectedResource, setSelectedResource] = useState<string | null>(null)
   const { type, id } = params
 
   useEffect(() => {
@@ -113,6 +115,28 @@ export default function ResourcePage({ params }: ResourcePageProps) {
           onViewLineage={() => console.log("View lineage")}
           onRequestPermission={() => console.log("Request permission")}
         />
+      )}
+
+      {selectedResource && (
+        <Dialog
+          open={!!selectedResource}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedResource(null)
+            }
+          }}
+        >
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>资源详情</DialogTitle>
+            </DialogHeader>
+            <ResourceDetail
+              resourceId={selectedResource}
+              onViewLineage={() => console.log("View lineage")}
+              onRequestPermission={() => console.log("Request permission")}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )
